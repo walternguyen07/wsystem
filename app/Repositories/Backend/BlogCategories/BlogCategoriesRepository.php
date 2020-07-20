@@ -26,23 +26,30 @@ class BlogCategoriesRepository extends BaseRepository
     public function getForDataTable()
     {
         return $this->query()
-            ->leftjoin(config('access.users_table'), config('access.users_table').'.id', '=', config('module.blog_categories.table').'.created_by')
-            ->select([
-                config('module.blog_categories.table').'.id',
-                config('module.blog_categories.table').'.name',
-                config('module.blog_categories.table').'.status',
-                config('module.blog_categories.table').'.created_by',
-                config('module.blog_categories.table').'.created_at',
-                config('access.users_table').'.first_name as user_name',
-            ]);
+            ->leftjoin(
+                config('access.users_table'),
+                config('access.users_table') . '.id',
+                '=',
+                config('module.blog_categories.table') . '.created_by'
+            )
+            ->select(
+                [
+                    config('module.blog_categories.table') . '.id',
+                    config('module.blog_categories.table') . '.name',
+                    config('module.blog_categories.table') . '.status',
+                    config('module.blog_categories.table') . '.created_by',
+                    config('module.blog_categories.table') . '.created_at',
+                    config('access.users_table') . '.first_name as user_name',
+                ]
+            );
     }
 
     /**
      * @param array $input
      *
+     * @return bool
      * @throws \App\Exceptions\GeneralException
      *
-     * @return bool
      */
     public function create(array $input)
     {
@@ -50,18 +57,20 @@ class BlogCategoriesRepository extends BaseRepository
             throw new GeneralException(trans('exceptions.backend.blogcategories.already_exists'));
         }
 
-        DB::transaction(function () use ($input) {
-            $input['status'] = isset($input['status']) ? 1 : 0;
-            $input['created_by'] = access()->user()->id;
+        DB::transaction(
+            function () use ($input) {
+                $input['status'] = isset($input['status']) ? 1 : 0;
+                $input['created_by'] = access()->user()->id;
 
-            if ($blogcategory = BlogCategory::create($input)) {
-                event(new BlogCategoryCreated($blogcategory));
+                if ($blogcategory = BlogCategory::create($input)) {
+                    event(new BlogCategoryCreated($blogcategory));
 
-                return true;
+                    return true;
+                }
+
+                throw new GeneralException(trans('exceptions.backend.blogcategories.create_error'));
             }
-
-            throw new GeneralException(trans('exceptions.backend.blogcategories.create_error'));
-        });
+        );
     }
 
     /**
@@ -78,37 +87,41 @@ class BlogCategoriesRepository extends BaseRepository
             throw new GeneralException(trans('exceptions.backend.blogcategories.already_exists'));
         }
 
-        DB::transaction(function () use ($blogcategory, $input) {
-            $input['status'] = isset($input['status']) ? 1 : 0;
-            $input['updated_by'] = access()->user()->id;
+        DB::transaction(
+            function () use ($blogcategory, $input) {
+                $input['status'] = isset($input['status']) ? 1 : 0;
+                $input['updated_by'] = access()->user()->id;
 
-            if ($blogcategory->update($input)) {
-                event(new BlogCategoryUpdated($blogcategory));
+                if ($blogcategory->update($input)) {
+                    event(new BlogCategoryUpdated($blogcategory));
 
-                return true;
+                    return true;
+                }
+
+                throw new GeneralException(trans('exceptions.backend.blogcategories.update_error'));
             }
-
-            throw new GeneralException(trans('exceptions.backend.blogcategories.update_error'));
-        });
+        );
     }
 
     /**
      * @param \App\Models\BlogCategories\BlogCategory $blogcategory
      *
+     * @return bool
      * @throws \App\Exceptions\GeneralException
      *
-     * @return bool
      */
     public function delete(BlogCategory $blogcategory)
     {
-        DB::transaction(function () use ($blogcategory) {
-            if ($blogcategory->delete()) {
-                event(new BlogCategoryDeleted($blogcategory));
+        DB::transaction(
+            function () use ($blogcategory) {
+                if ($blogcategory->delete()) {
+                    event(new BlogCategoryDeleted($blogcategory));
 
-                return true;
+                    return true;
+                }
+
+                throw new GeneralException(trans('exceptions.backend.blogcategories.delete_error'));
             }
-
-            throw new GeneralException(trans('exceptions.backend.blogcategories.delete_error'));
-        });
+        );
     }
 }

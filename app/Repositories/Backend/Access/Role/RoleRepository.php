@@ -44,26 +44,35 @@ class RoleRepository extends BaseRepository
             ->leftJoin('users', 'role_user.user_id', '=', 'users.id')
             ->leftJoin('permission_role', 'permission_role.role_id', '=', 'roles.id')
             ->leftJoin('permissions', 'permission_role.permission_id', '=', 'permissions.id')
-            ->select([
-                config('access.roles_table').'.id',
-                config('access.roles_table').'.name',
-                config('access.roles_table').'.all',
-                config('access.roles_table').'.sort',
-                config('access.roles_table').'.status',
-                config('access.roles_table').'.created_at',
-                config('access.roles_table').'.updated_at',
-                DB::raw("GROUP_CONCAT( DISTINCT permissions.display_name SEPARATOR '<br/>') as permission_name"),
-                DB::raw('(SELECT COUNT(role_user.id) FROM role_user LEFT JOIN users ON role_user.user_id = users.id WHERE role_user.role_id = roles.id AND users.deleted_at IS NULL) AS userCount'),
-            ])
-            ->groupBy(config('access.roles_table').'.id', config('access.roles_table').'.name', config('access.roles_table').'.all', config('access.roles_table').'.sort');
+            ->select(
+                [
+                    config('access.roles_table') . '.id',
+                    config('access.roles_table') . '.name',
+                    config('access.roles_table') . '.all',
+                    config('access.roles_table') . '.sort',
+                    config('access.roles_table') . '.status',
+                    config('access.roles_table') . '.created_at',
+                    config('access.roles_table') . '.updated_at',
+                    DB::raw("GROUP_CONCAT( DISTINCT permissions.display_name SEPARATOR '<br/>') as permission_name"),
+                    DB::raw(
+                        '(SELECT COUNT(role_user.id) FROM role_user LEFT JOIN users ON role_user.user_id = users.id WHERE role_user.role_id = roles.id AND users.deleted_at IS NULL) AS userCount'
+                    ),
+                ]
+            )
+            ->groupBy(
+                config('access.roles_table') . '.id',
+                config('access.roles_table') . '.name',
+                config('access.roles_table') . '.all',
+                config('access.roles_table') . '.sort'
+            );
     }
 
     /**
      * @param array $input
      *
+     * @return bool
      * @throws GeneralException
      *
-     * @return bool
      */
     public function create(array $input)
     {
@@ -86,49 +95,53 @@ class RoleRepository extends BaseRepository
             }
         }
 
-        DB::transaction(function () use ($input, $all) {
-            $role = self::MODEL;
-            $role = new $role();
-            $role->name = $input['name'];
-            $role->sort = isset($input['sort']) && strlen($input['sort']) > 0 && is_numeric($input['sort']) ? (int) $input['sort'] : 0;
+        DB::transaction(
+            function () use ($input, $all) {
+                $role = self::MODEL;
+                $role = new $role();
+                $role->name = $input['name'];
+                $role->sort = isset($input['sort']) && strlen($input['sort']) > 0 && is_numeric(
+                    $input['sort']
+                ) ? (int)$input['sort'] : 0;
 
-            //See if this role has all permissions and set the flag on the role
-            $role->all = $all;
+                //See if this role has all permissions and set the flag on the role
+                $role->all = $all;
 
-            $role->status = (isset($input['status']) && $input['status'] == 1) ? 1 : 0;
-            $role->created_by = access()->user()->id;
+                $role->status = (isset($input['status']) && $input['status'] == 1) ? 1 : 0;
+                $role->created_by = access()->user()->id;
 
-            if ($role->save()) {
-                if (!$all) {
-                    $permissions = [];
+                if ($role->save()) {
+                    if (!$all) {
+                        $permissions = [];
 
-                    if (is_array($input['permissions']) && count($input['permissions'])) {
-                        foreach ($input['permissions'] as $perm) {
-                            if (is_numeric($perm)) {
-                                array_push($permissions, $perm);
+                        if (is_array($input['permissions']) && count($input['permissions'])) {
+                            foreach ($input['permissions'] as $perm) {
+                                if (is_numeric($perm)) {
+                                    array_push($permissions, $perm);
+                                }
                             }
                         }
+
+                        $role->attachPermissions($permissions);
                     }
 
-                    $role->attachPermissions($permissions);
+                    event(new RoleCreated($role));
+
+                    return true;
                 }
 
-                event(new RoleCreated($role));
-
-                return true;
+                throw new GeneralException(trans('exceptions.backend.access.roles.create_error'));
             }
-
-            throw new GeneralException(trans('exceptions.backend.access.roles.create_error'));
-        });
+        );
     }
 
     /**
      * @param Model $role
      * @param  $input
      *
+     * @return bool
      * @throws GeneralException
      *
-     * @return bool
      */
     public function update($role, array $input)
     {
@@ -152,7 +165,9 @@ class RoleRepository extends BaseRepository
         }
 
         $role->name = $input['name'];
-        $role->sort = isset($input['sort']) && strlen($input['sort']) > 0 && is_numeric($input['sort']) ? (int) $input['sort'] : 0;
+        $role->sort = isset($input['sort']) && strlen($input['sort']) > 0 && is_numeric(
+            $input['sort']
+        ) ? (int)$input['sort'] : 0;
 
         //See if this role has all permissions and set the flag on the role
         $role->all = $all;
@@ -160,44 +175,46 @@ class RoleRepository extends BaseRepository
         $role->status = (isset($input['status']) && $input['status'] == 1) ? 1 : 0;
         $role->updated_by = access()->user()->id;
 
-        DB::transaction(function () use ($role, $input, $all) {
-            if ($role->save()) {
-                //If role has all access detach all permissions because they're not needed
-                if ($all) {
-                    $role->permissions()->sync([]);
-                } else {
-                    //Remove all roles first
-                    $role->permissions()->sync([]);
+        DB::transaction(
+            function () use ($role, $input, $all) {
+                if ($role->save()) {
+                    //If role has all access detach all permissions because they're not needed
+                    if ($all) {
+                        $role->permissions()->sync([]);
+                    } else {
+                        //Remove all roles first
+                        $role->permissions()->sync([]);
 
-                    //Attach permissions if the role does not have all access
-                    $permissions = [];
+                        //Attach permissions if the role does not have all access
+                        $permissions = [];
 
-                    if (is_array($input['permissions']) && count($input['permissions'])) {
-                        foreach ($input['permissions'] as $perm) {
-                            if (is_numeric($perm)) {
-                                array_push($permissions, $perm);
+                        if (is_array($input['permissions']) && count($input['permissions'])) {
+                            foreach ($input['permissions'] as $perm) {
+                                if (is_numeric($perm)) {
+                                    array_push($permissions, $perm);
+                                }
                             }
                         }
+
+                        $role->attachPermissions($permissions);
                     }
 
-                    $role->attachPermissions($permissions);
+                    event(new RoleUpdated($role));
+
+                    return true;
                 }
 
-                event(new RoleUpdated($role));
-
-                return true;
+                throw new GeneralException(trans('exceptions.backend.access.roles.update_error'));
             }
-
-            throw new GeneralException(trans('exceptions.backend.access.roles.update_error'));
-        });
+        );
     }
 
     /**
      * @param Role $role
      *
+     * @return bool
      * @throws GeneralException
      *
-     * @return bool
      */
     public function delete(Role $role)
     {
@@ -211,18 +228,20 @@ class RoleRepository extends BaseRepository
             throw new GeneralException(trans('exceptions.backend.access.roles.has_users'));
         }
 
-        DB::transaction(function () use ($role) {
-            //Detach all associated roles
-            $role->permissions()->sync([]);
+        DB::transaction(
+            function () use ($role) {
+                //Detach all associated roles
+                $role->permissions()->sync([]);
 
-            if ($role->delete()) {
-                event(new RoleDeleted($role));
+                if ($role->delete()) {
+                    event(new RoleDeleted($role));
 
-                return true;
+                    return true;
+                }
+
+                throw new GeneralException(trans('exceptions.backend.access.roles.delete_error'));
             }
-
-            throw new GeneralException(trans('exceptions.backend.access.roles.delete_error'));
-        });
+        );
     }
 
     /**
@@ -231,7 +250,7 @@ class RoleRepository extends BaseRepository
     public function getDefaultUserRole()
     {
         if (is_numeric(config('access.users.default_role'))) {
-            return $this->query()->where('id', (int) config('access.users.default_role'))->first();
+            return $this->query()->where('id', (int)config('access.users.default_role'))->first();
         }
 
         return $this->query()->where('name', config('access.users.default_role'))->first();
