@@ -13,9 +13,9 @@ class UserSessionRepository
     /**
      * @param User $user
      *
+     * @return mixed
      * @throws GeneralException
      *
-     * @return mixed
      */
     public function clearSession(User $user)
     {

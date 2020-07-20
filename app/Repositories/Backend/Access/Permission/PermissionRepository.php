@@ -26,22 +26,24 @@ class PermissionRepository extends BaseRepository
     public function getForDataTable()
     {
         return $this->query()
-            ->select([
-                config('access.permissions_table').'.id',
-                config('access.permissions_table').'.name',
-                config('access.permissions_table').'.display_name',
-                config('access.permissions_table').'.sort',
-                config('access.permissions_table').'.created_at',
-                config('access.permissions_table').'.updated_at',
-            ]);
+            ->select(
+                [
+                    config('access.permissions_table') . '.id',
+                    config('access.permissions_table') . '.name',
+                    config('access.permissions_table') . '.display_name',
+                    config('access.permissions_table') . '.sort',
+                    config('access.permissions_table') . '.created_at',
+                    config('access.permissions_table') . '.updated_at',
+                ]
+            );
     }
 
     /**
      * @param array $input
      *
+     * @return bool
      * @throws GeneralException
      *
-     * @return bool
      */
     public function create(array $input)
     {
@@ -49,32 +51,36 @@ class PermissionRepository extends BaseRepository
             throw new GeneralException(trans('exceptions.backend.access.permissions.already_exists'));
         }
 
-        DB::transaction(function () use ($input) {
-            $permission = self::MODEL;
-            $permission = new $permission();
-            $permission->name = $input['name'];
-            $permission->display_name = $input['display_name'];
-            $permission->sort = isset($input['sort']) && strlen($input['sort']) > 0 && is_numeric($input['sort']) ? (int) $input['sort'] : 0;
-            $permission->status = 1;
-            $permission->created_by = access()->user()->id;
+        DB::transaction(
+            function () use ($input) {
+                $permission = self::MODEL;
+                $permission = new $permission();
+                $permission->name = $input['name'];
+                $permission->display_name = $input['display_name'];
+                $permission->sort = isset($input['sort']) && strlen($input['sort']) > 0 && is_numeric(
+                    $input['sort']
+                ) ? (int)$input['sort'] : 0;
+                $permission->status = 1;
+                $permission->created_by = access()->user()->id;
 
-            if ($permission->save()) {
-                event(new PermissionCreated($permission));
+                if ($permission->save()) {
+                    event(new PermissionCreated($permission));
 
-                return true;
+                    return true;
+                }
+
+                throw new GeneralException(trans('exceptions.backend.access.permissions.create_error'));
             }
-
-            throw new GeneralException(trans('exceptions.backend.access.permissions.create_error'));
-        });
+        );
     }
 
     /**
      * @param Model $permission
      * @param  $input
      *
+     * @return bool
      * @throws GeneralException
      *
-     * @return bool
      */
     public function update($permission, array $input)
     {
@@ -84,38 +90,44 @@ class PermissionRepository extends BaseRepository
 
         $permission->name = $input['name'];
         $permission->display_name = $input['display_name'];
-        $permission->sort = isset($input['sort']) && strlen($input['sort']) > 0 && is_numeric($input['sort']) ? (int) $input['sort'] : 0;
+        $permission->sort = isset($input['sort']) && strlen($input['sort']) > 0 && is_numeric(
+            $input['sort']
+        ) ? (int)$input['sort'] : 0;
         $permission->status = 1;
         $permission->updated_by = access()->user()->id;
 
-        DB::transaction(function () use ($permission, $input) {
-            if ($permission->save()) {
-                event(new PermissionUpdated($permission));
+        DB::transaction(
+            function () use ($permission, $input) {
+                if ($permission->save()) {
+                    event(new PermissionUpdated($permission));
 
-                return true;
+                    return true;
+                }
+
+                throw new GeneralException(trans('exceptions.backend.access.permission.update_error'));
             }
-
-            throw new GeneralException(trans('exceptions.backend.access.permission.update_error'));
-        });
+        );
     }
 
     /**
      * @param Model $permission
      *
+     * @return bool
      * @throws GeneralException
      *
-     * @return bool
      */
     public function delete($permission)
     {
-        DB::transaction(function () use ($permission) {
-            if ($permission->delete()) {
-                event(new PermissionDeleted($permission));
+        DB::transaction(
+            function () use ($permission) {
+                if ($permission->delete()) {
+                    event(new PermissionDeleted($permission));
 
-                return true;
+                    return true;
+                }
+
+                throw new GeneralException(trans('exceptions.backend.access.permission.delete_error'));
             }
-
-            throw new GeneralException(trans('exceptions.backend.access.permission.delete_error'));
-        });
+        );
     }
 }
