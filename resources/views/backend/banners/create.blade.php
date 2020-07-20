@@ -10,7 +10,7 @@
 @endsection
 
 @section('content')
-    {{ Form::open(['route' => 'admin.banners.store', 'class' => 'form-horizontal', 'role' => 'form', 'method' => 'post', 'id' => 'create-banner']) }}
+    {{ Form::open(['route' => 'admin.banners.store', 'class' => 'form-horizontal', 'role' => 'form', 'method' => 'post', 'id' => 'create-banner', 'files' => true]) }}
 
         <div class="box box-info">
             <div class="box-header with-border">

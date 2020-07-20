@@ -190,6 +190,19 @@ return [
                 'meta_description' => 'Meta Description',
                 'status'           => 'Status',
             ],
+            'banner' => [
+                'name'            => 'Banner Title',
+                'url'             => 'Banner Url',
+                'image'            => 'Banner Image',
+                'description'          => 'Description',
+                'tags'             => 'Tags',
+                'meta-title'       => 'Meta Title',
+                'slug'             => 'Slug',
+                'cannonical_link'  => 'Cannonical Link',
+                'meta_keyword'     => 'Meta Keyword',
+                'meta_description' => 'Meta Description',
+                'status'           => 'Status',
+            ],
 
             'settings' => [
                 'sitelogo'        => 'Site Logo',

@@ -243,6 +243,7 @@ return [
 	"title" => "Banners",
 	"table" => [
 	"id" => "Id",
+	"name" => "Name",
 	"createdat" => "Created At",
 	],
 	],

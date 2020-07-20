@@ -22,6 +22,7 @@
                     <thead>
                         <tr>
                             <th>{{ trans('labels.backend.banners.table.id') }}</th>
+                            <th>{{ trans('labels.backend.banners.table.name') }}</th>
                             <th>{{ trans('labels.backend.banners.table.createdat') }}</th>
                             <th>{{ trans('labels.general.actions') }}</th>
                         </tr>
@@ -51,7 +52,7 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             });
-            
+
             var dataTable = $('#banners-table').dataTable({
                 processing: true,
                 serverSide: true,
@@ -61,6 +62,7 @@
                 },
                 columns: [
                     {data: 'id', name: '{{config('module.banners.table')}}.id'},
+                    {data: 'name', name: '{{config('module.banners.table')}}.name'},
                     {data: 'created_at', name: '{{config('module.banners.table')}}.created_at'},
                     {data: 'actions', name: 'actions', searchable: false, sortable: false}
                 ],

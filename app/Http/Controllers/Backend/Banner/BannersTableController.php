@@ -38,6 +38,7 @@ class BannersTableController extends Controller
     {
         return Datatables::of($this->banner->getForDataTable())
             ->escapeColumns(['id'])
+            ->escapeColumns(['name'])
             ->addColumn('created_at', function ($banner) {
                 return Carbon::parse($banner->created_at)->toDateString();
             })

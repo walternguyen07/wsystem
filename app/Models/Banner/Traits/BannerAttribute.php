@@ -17,8 +17,12 @@ trait BannerAttribute
      */
     public function getActionButtonsAttribute()
     {
-        return '<div class="btn-group action-btn"> {$this->getEditButtonAttribute("edit-banner", "admin.banners.edit")}
-                {$this->getDeleteButtonAttribute("delete-banner", "admin.banners.destroy")}
-                </div>';
+        return '<div class="btn-group action-btn">'.
+        $this->getEditButtonAttribute('edit-banner', 'admin.banners.edit').
+        $this->getDeleteButtonAttribute('delete-banner', 'admin.banners.destroy').
+        '</div>';
+        // return '<div class="btn-group action-btn"> {$this->getEditButtonAttribute("edit-banner", "admin.banners.edit")}
+        //         {$this->getDeleteButtonAttribute("delete-banner", "admin.banners.destroy")}
+        //         </div>';
     }
 }
