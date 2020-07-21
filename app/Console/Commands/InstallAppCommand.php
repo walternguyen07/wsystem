@@ -85,14 +85,14 @@ class InstallAppCommand extends Command
     public function handle()
     {
         $this->line('------------------');
-        $this->line('Welcome to Laravel Admin Panel.');
+        $this->line('Welcome to Walter Sytem Panel.');
         $this->line('------------------');
         exec('composer install'); // composer install
 
         $extensions = get_loaded_extensions();
         $require_extensions = ['mbstring', 'openssl', 'curl', 'exif', 'fileinfo', 'tokenizer'];
         foreach (array_diff($require_extensions, $extensions) as $missing_extension) {
-            $this->error('Missing '.ucfirst($missing_extension).' extension');
+            $this->error('Missing ' . ucfirst($missing_extension) . ' extension');
         }
 
         if (!file_exists('.env')) {
@@ -136,13 +136,15 @@ class InstallAppCommand extends Command
     /**
      * Set Database info in .env file.
      *
+     * @return void
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      *
-     * @return void
      */
     protected function setDatabaseInfo()
     {
-        $this->info('Setting up database (please make sure you have created database for this site or not to worry you can dump from here)...!');
+        $this->info(
+            'Setting up database (please make sure you have created database for this site or not to worry you can dump from here)...!'
+        );
 
         $this->host = env('DB_HOST');
         $this->port = env('DB_PORT');
@@ -156,7 +158,10 @@ class InstallAppCommand extends Command
             $this->port = $this->ask('Enter a database port?', config('config-variables.default_db_port'));
             $this->database = $this->ask('Enter a database name', $this->guessDatabaseName());
 
-            $this->username = $this->ask('What is your MySQL username?', config('config-variables.default_db_username'));
+            $this->username = $this->ask(
+                'What is your MySQL username?',
+                config('config-variables.default_db_username')
+            );
 
             $question = new Question('What is your MySQL password?', '<none>');
             $question->setHidden(true)->setHiddenFallback(true);
@@ -168,11 +173,23 @@ class InstallAppCommand extends Command
 
             // Update DB credentials in .env file.
             $contents = $this->getKeyFile();
-            $contents = preg_replace('/('.preg_quote('DB_HOST=').')(.*)/', 'DB_HOST='.$this->host, $contents);
-            $contents = preg_replace('/('.preg_quote('DB_PORT=').')(.*)/', 'DB_PORT='.$this->port, $contents);
-            $contents = preg_replace('/('.preg_quote('DB_DATABASE=').')(.*)/', 'DB_DATABASE='.$this->database, $contents);
-            $contents = preg_replace('/('.preg_quote('DB_USERNAME=').')(.*)/', 'DB_USERNAME='.$this->username, $contents);
-            $contents = preg_replace('/('.preg_quote('DB_PASSWORD=').')(.*)/', 'DB_PASSWORD='.$this->password, $contents);
+            $contents = preg_replace('/(' . preg_quote('DB_HOST=') . ')(.*)/', 'DB_HOST=' . $this->host, $contents);
+            $contents = preg_replace('/(' . preg_quote('DB_PORT=') . ')(.*)/', 'DB_PORT=' . $this->port, $contents);
+            $contents = preg_replace(
+                '/(' . preg_quote('DB_DATABASE=') . ')(.*)/',
+                'DB_DATABASE=' . $this->database,
+                $contents
+            );
+            $contents = preg_replace(
+                '/(' . preg_quote('DB_USERNAME=') . ')(.*)/',
+                'DB_USERNAME=' . $this->username,
+                $contents
+            );
+            $contents = preg_replace(
+                '/(' . preg_quote('DB_PASSWORD=') . ')(.*)/',
+                'DB_PASSWORD=' . $this->password,
+                $contents
+            );
 
             if (!$contents) {
                 throw new Exception('Error while writing credentials to .env file.');
@@ -225,9 +242,9 @@ class InstallAppCommand extends Command
     }
 
     /**
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
-     *
      * @return string
+     *
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      *
      * @author Ruchit Patel
      */
@@ -277,10 +294,10 @@ class InstallAppCommand extends Command
             DB::purge();
 
             // Switch to use {$this->database}
-            DB::unprepared('USE `'.$database.'`');
+            DB::unprepared('USE `' . $database . '`');
             DB::connection()->setDatabaseName($database);
 
-            $dumpDB = DB::unprepared(file_get_contents(base_path().'/database/dump/laravel_admin_panel.sql'));
+            $dumpDB = DB::unprepared(file_get_contents(base_path() . '/database/dump/laravel_admin_panel.sql'));
 
             if ($dumpDB) {
                 $this->info('Import default database successfully!');
@@ -295,7 +312,7 @@ class InstallAppCommand extends Command
      */
     protected function migrateTables($database)
     {
-        DB::unprepared('USE `'.$database.'`');
+        DB::unprepared('USE `' . $database . '`');
 
         Artisan::call('migrate'); // Artisan migration
         $this->info('Migration successfully done!');

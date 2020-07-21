@@ -13,7 +13,9 @@ use Illuminate\Queue\SerializesModels;
 class BannerCreated
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
+
     public $banners;
+
     /**
      * Create a new event instance.
      *

@@ -27,11 +27,11 @@
             </a>
         </li>
         @permission( 'create-banner' )
-            <li>
-                <a href="{{ route( 'admin.banners.create' ) }}">
-                    <i class="fa fa-plus"></i> {{ trans( 'menus.backend.banners.create' ) }}
-                </a>
-            </li>
+        <li>
+            <a href="{{ route( 'admin.banners.create' ) }}">
+                <i class="fa fa-plus"></i> {{ trans( 'menus.backend.banners.create' ) }}
+            </a>
+        </li>
         @endauth
     </ul>
 </div>
