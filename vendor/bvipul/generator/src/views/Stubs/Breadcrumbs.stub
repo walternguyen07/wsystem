@@ -1,0 +1,26 @@
+<?php
+/**
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade laravel walter package to newer
+ * versions in the future.
+ *
+ * @category    Walter
+ * @package     Laravel
+ * @author      Walter Nguyen
+ * @copyright   Copyright (c) Walter Nguyen
+ */
+Breadcrumbs::register('admin.dummy_small_plural_model.index', function ($breadcrumbs) {
+    $breadcrumbs->parent('admin.dashboard');
+    $breadcrumbs->push(trans('menus.backend.dummy_small_plural_model.management'), route('admin.dummy_small_plural_model.index'));
+});
+
+Breadcrumbs::register('admin.dummy_small_plural_model.create', function ($breadcrumbs) {
+    $breadcrumbs->parent('admin.dummy_small_plural_model.index');
+    $breadcrumbs->push(trans('menus.backend.dummy_small_plural_model.create'), route('admin.dummy_small_plural_model.create'));
+});
+
+Breadcrumbs::register('admin.dummy_small_plural_model.edit', function ($breadcrumbs, $id) {
+    $breadcrumbs->parent('admin.dummy_small_plural_model.index');
+    $breadcrumbs->push(trans('menus.backend.dummy_small_plural_model.edit'), route('admin.dummy_small_plural_model.edit', $id));
+});
