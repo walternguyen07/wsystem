@@ -26,7 +26,7 @@ class BannerRepository extends BaseRepository
 
     public function __construct()
     {
-        $this->upload_path = 'img' . DIRECTORY_SEPARATOR . 'blog' . DIRECTORY_SEPARATOR;
+        $this->upload_path = 'img' . DIRECTORY_SEPARATOR . 'banner' . DIRECTORY_SEPARATOR;
         $this->storage = Storage::disk('public');
     }
     /**
@@ -84,10 +84,21 @@ class BannerRepository extends BaseRepository
      */
     public function update(Banner $banner, array $input)
     {
-    	if ($banner->update($input))
-            return true;
+        // Uploading Image
+        if (array_key_exists('image_url', $input)) {
+            $this->deleteOldFile($banner);
+            $input = $this->uploadImage($input);
+        }
 
-        throw new GeneralException(trans('exceptions.backend.banners.update_error'));
+        DB::transaction(
+            function () use ($banner, $input) {
+                if ($banner->update($input)) {
+                    event(new BannerUpdated($banner));
+                    return true;
+                }
+                throw new GeneralException(trans('exceptions.backend.banners.update_error'));
+            }
+        );
     }
 
     /**
@@ -99,11 +110,19 @@ class BannerRepository extends BaseRepository
      */
     public function delete(Banner $banner)
     {
-        if ($banner->delete()) {
-            return true;
-        }
+        DB::transaction(
+            function () use ($banner) {
+                if ($banner->delete()) {
+                    event(new BannerDeleted($banner));
+                    return true;
+                }
 
-        throw new GeneralException(trans('exceptions.backend.banners.delete_error'));
+                throw new GeneralException(trans('exceptions.backend.banners.delete_error'));
+            }
+        );
+
+
+
     }
     /**
      * Upload Image.
@@ -134,7 +153,7 @@ class BannerRepository extends BaseRepository
      */
     public function deleteOldFile($model)
     {
-        $fileName = $model->featured_image;
+        $fileName = $model->image_url;
 
         return $this->storage->delete($this->upload_path . $fileName);
     }
