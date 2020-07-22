@@ -85,6 +85,20 @@ return [
 	"not_found" => "That Banner does not exist.",
 	"update_error" => "There was a problem updating this Banner. Please try again.",
 	],
+	"products" => [
+	"already_exists" => "That Product already exists. Please choose a different name.",
+	"create_error" => "There was a problem creating this Product. Please try again.",
+	"delete_error" => "There was a problem deleting this Product. Please try again.",
+	"not_found" => "That Product does not exist.",
+	"update_error" => "There was a problem updating this Product. Please try again.",
+	],
+	"categories" => [
+	"already_exists" => "That Category already exists. Please choose a different name.",
+	"create_error" => "There was a problem creating this Category. Please try again.",
+	"delete_error" => "There was a problem deleting this Category. Please try again.",
+	"not_found" => "That Category does not exist.",
+	"update_error" => "There was a problem updating this Category. Please try again.",
+	],
 	],
 	"frontend" => [
 	"auth" => [

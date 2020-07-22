@@ -203,6 +203,10 @@ return [
                 'meta_description' => 'Meta Description',
                 'status' => 'Status',
             ],
+            'category' => [
+                'name' => 'Name',
+                'status' => 'Status',
+            ],
 
             'settings' => [
                 'sitelogo' => 'Site Logo',

@@ -23,4 +23,10 @@ return [
 	"banners" => [
 	"table" => "banners",
 	],
+	"products" => [
+	"table" => "products",
+	],
+	"categories" => [
+	"table" => "categories",
+	],
 ];
