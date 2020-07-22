@@ -23,7 +23,7 @@
 
 **Command list**
 
-    git clone https://github.com/viralsolani/laravel-adminpanel.git
+    git clone https://github.com/walternguyen07/wsystem.git
     cd laravel-adminpanel
     cp .env.example .env
     composer install
@@ -52,9 +52,6 @@
 `php artisan db:seed` adds three users with respective roles. The credentials are as follows:
 
 * Administrator: `admin@admin.com`
-* Backend User: `executive@executive.com`
-* Default User: `user@user.com`
-
 Password: `1234`
 
 ## ScreenShots
@@ -69,17 +66,6 @@ Password: `1234`
 ![Screenshot](screenshots/settings.png)
 
 ## Issues
-
-If you come across any issues please report them [here](https://github.com/viralsolani/laravel-adminpanel/issues).
-
-## Contributing
-Feel free to create any pull requests for the project. For proposing any new changes or features you want to add to the project, you can send us an email at following addresses.
-
-    (1) Viral Solani - viral.solani@gmail.com
-    (2) Vipul Basapati - basapativipulkumar@gmail.com
-    (3) Vallabh Kansagara - vrkansagara@gmail.com
-    (4) Kamlesh Gupta - webworldgk@gmail.com
-
 ## License
 
 [MIT LICENSE](https://github.com/viralsolani/laravel-adminpanel/blob/master/LICENSE.txt)

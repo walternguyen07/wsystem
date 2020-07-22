@@ -1,3 +1,17 @@
+<?php
+/**
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade laravel walter package to newer
+ * versions in the future.
+ *
+ * @category    Walter
+ * @package     Laravel
+ * @author      Walter Nguyen
+ * @copyright   Copyright (c) Walter Nguyen
+ */
+
+?>
 <div class="box-body">
     <div class="form-group">
         {{ Form::label('name', trans('validation.attributes.backend.blogtags.title'), ['class' => 'col-lg-2 control-label required']) }}
@@ -13,13 +27,13 @@
         <div class="col-lg-10">
             <div class="control-group">
                 <label class="control control--checkbox">
-            @if(isset($blogtag->status) && !empty ($blogtag->status))
-                {{ Form::checkbox('status', 1, true) }}
-            @else
-                {{ Form::checkbox('status', 1, false) }}
-            @endif
-            <div class="control__indicator"></div>
+                    @if(isset($blogtag->status) && !empty ($blogtag->status))
+                        {{ Form::checkbox('status', 1, true) }}
+                    @else
+                        {{ Form::checkbox('status', 1, false) }}
+                    @endif
+                    <div class="control__indicator"></div>
                 </label>
-        </div><!--col-lg-3-->
-    </div><!--form control-->
-</div>
+            </div><!--col-lg-3-->
+        </div><!--form control-->
+    </div>
