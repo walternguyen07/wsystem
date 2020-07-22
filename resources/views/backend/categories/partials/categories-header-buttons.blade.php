@@ -10,6 +10,7 @@
  * @author      Walter Nguyen
  * @copyright   Copyright (c) Walter Nguyen
  */
+
 ?>
 <!--Action Button-->
 @if( Active::checkUriPattern( 'admin/categories' ) )
@@ -40,11 +41,11 @@
             </a>
         </li>
         @permission( 'create-category' )
-            <li>
-                <a href="{{ route( 'admin.categories.create' ) }}">
-                    <i class="fa fa-plus"></i> {{ trans( 'menus.backend.categories.create' ) }}
-                </a>
-            </li>
+        <li>
+            <a href="{{ route( 'admin.categories.create' ) }}">
+                <i class="fa fa-plus"></i> {{ trans( 'menus.backend.categories.create' ) }}
+            </a>
+        </li>
         @endauth
     </ul>
 </div>
