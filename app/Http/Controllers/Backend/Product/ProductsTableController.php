@@ -10,6 +10,7 @@
  * @author      Walter Nguyen
  * @copyright   Copyright (c) Walter Nguyen
  */
+
 namespace App\Http\Controllers\Backend\Product;
 
 use Carbon\Carbon;
@@ -31,7 +32,7 @@ class ProductsTableController extends Controller
 
     /**
      * contructor to initialize repository object
-     * @param ProductRepository $product;
+     * @param ProductRepository $product ;
      */
     public function __construct(ProductRepository $product)
     {
@@ -49,19 +50,31 @@ class ProductsTableController extends Controller
         return Datatables::of($this->product->getForDataTable())
             ->escapeColumns(['id'])
             ->escapeColumns(['name'])
-
-            ->addColumn('publish_datetime', function ($product) {
-                return Carbon::parse($product->publish_datetime)->toDateString(); //$product->publish_datetime;//->format('d/m/Y h:i A');
-            })
-            ->addColumn('status', function ($product) {
-                return $product->status;
-            })
-            ->addColumn('created_at', function ($product) {
-                return Carbon::parse($product->created_at)->toDateString();
-            })
-            ->addColumn('actions', function ($product) {
-                return $product->action_buttons;
-            })
+            ->addColumn(
+                'publish_datetime',
+                function ($product) {
+                    return Carbon::parse($product->publish_datetime)->toDateString(
+                    ); //$product->publish_datetime;//->format('d/m/Y h:i A');
+                }
+            )
+            ->addColumn(
+                'status',
+                function ($product) {
+                    return $product->status;
+                }
+            )
+            ->addColumn(
+                'created_at',
+                function ($product) {
+                    return Carbon::parse($product->created_at)->toDateString();
+                }
+            )
+            ->addColumn(
+                'actions',
+                function ($product) {
+                    return $product->action_buttons;
+                }
+            )
             ->make(true);
     }
 }

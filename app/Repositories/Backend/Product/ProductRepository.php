@@ -10,6 +10,7 @@
  * @author      Walter Nguyen
  * @copyright   Copyright (c) Walter Nguyen
  */
+
 namespace App\Repositories\Backend\Product;
 
 use DB;
@@ -21,6 +22,7 @@ use App\Exceptions\GeneralException;
 use App\Repositories\BaseRepository;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+
 /**
  * Class ProductRepository.
  */
@@ -40,31 +42,32 @@ class ProductRepository extends BaseRepository
     public function getForDataTable()
     {
         return $this->query()
-            ->select([
-                config('module.products.table').'.id',
-                config('module.products.table').'.name',
-                config('module.products.table').'.publish_datetime',
-                config('module.products.table').'.status',
-                config('module.products.table').'.created_at',
-                config('module.products.table').'.updated_at',
-            ]);
+            ->select(
+                [
+                    config('module.products.table') . '.id',
+                    config('module.products.table') . '.name',
+                    config('module.products.table') . '.publish_datetime',
+                    config('module.products.table') . '.status',
+                    config('module.products.table') . '.created_at',
+                    config('module.products.table') . '.updated_at',
+                ]
+            );
     }
 
     /**
      * For Creating the respective model in storage
      *
      * @param array $input
-     * @throws GeneralException
      * @return bool
+     * @throws GeneralException
      */
     public function create(array $input)
     {
-
         $categoriesArray = $this->createCategories($input['categories']);
         unset($input['categories']);
 
         DB::transaction(
-            function () use ($input,  $categoriesArray) {
+            function () use ($input, $categoriesArray) {
                 $input['slug'] = Str::slug($input['name']);
                 $input['publish_datetime'] = Carbon::parse($input['publish_datetime']);
 
@@ -93,7 +96,7 @@ class ProductRepository extends BaseRepository
     public function update(Product $product, array $input)
     {
         $categoriesArray = $this->createCategories($input['categories']);
-        unset( $input['categories']);
+        unset($input['categories']);
 
         $input['slug'] = Str::slug($input['name']);
         $input['publish_datetime'] = Carbon::parse($input['publish_datetime']);
@@ -108,24 +111,19 @@ class ProductRepository extends BaseRepository
                 }
 
                 throw new GeneralException(trans('exceptions.backend.products.update_error'));
-
             }
         );
-
-
-
     }
 
     /**
      * For deleting the respective model from storage
      *
      * @param Product $product
-     * @throws GeneralException
      * @return bool
+     * @throws GeneralException
      */
     public function delete(Product $product)
     {
-
         DB::transaction(
             function () use ($product) {
                 if ($product->delete()) {
@@ -137,7 +135,7 @@ class ProductRepository extends BaseRepository
         );
     }
 
-     /**
+    /**
      * Creating Categories.
      *
      * @param Array($categories)

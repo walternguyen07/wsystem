@@ -13,12 +13,15 @@ class CreateProductMapCategoriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('product_map_categories', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->integer('product_id')->unsigned()->index();
-            $table->integer('category_id')->unsigned()->index();
-            $table->timestamps();
-        });
+        Schema::create(
+            'product_map_categories',
+            function (Blueprint $table) {
+                $table->bigIncrements('id');
+                $table->integer('product_id')->unsigned()->index();
+                $table->integer('category_id')->unsigned()->index();
+                $table->timestamps();
+            }
+        );
     }
 
     /**

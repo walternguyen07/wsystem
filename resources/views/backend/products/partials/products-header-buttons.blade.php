@@ -10,6 +10,7 @@
  * @author      Walter Nguyen
  * @copyright   Copyright (c) Walter Nguyen
  */
+
 ?>
 <!--Action Button-->
 @if( Active::checkUriPattern( 'admin/products' ) )
@@ -40,11 +41,11 @@
             </a>
         </li>
         @permission( 'create-product' )
-            <li>
-                <a href="{{ route( 'admin.products.create' ) }}">
-                    <i class="fa fa-plus"></i> {{ trans( 'menus.backend.products.create' ) }}
-                </a>
-            </li>
+        <li>
+            <a href="{{ route( 'admin.products.create' ) }}">
+                <i class="fa fa-plus"></i> {{ trans( 'menus.backend.products.create' ) }}
+            </a>
+        </li>
         @endauth
     </ul>
 </div>

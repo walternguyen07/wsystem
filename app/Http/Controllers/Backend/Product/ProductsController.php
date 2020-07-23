@@ -10,6 +10,7 @@
  * @author      Walter Nguyen
  * @copyright   Copyright (c) Walter Nguyen
  */
+
 namespace App\Http\Controllers\Backend\Product;
 
 use App\Models\Product\Product;
@@ -35,8 +36,8 @@ class ProductsController extends Controller
 {
     protected $status = [
         'Published' => 'Published',
-        'Draft'     => 'Draft',
-        'InActive'  => 'InActive',
+        'Draft' => 'Draft',
+        'InActive' => 'InActive',
         'Scheduled' => 'Scheduled',
     ];
     /**
@@ -47,7 +48,7 @@ class ProductsController extends Controller
 
     /**
      * contructor to initialize repository object
-     * @param ProductRepository $repository;
+     * @param ProductRepository $repository ;
      */
     public function __construct(ProductRepository $repository)
     {
@@ -57,17 +58,18 @@ class ProductsController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param  App\Http\Requests\Backend\Product\ManageProductRequest  $request
+     * @param App\Http\Requests\Backend\Product\ManageProductRequest $request
      * @return \App\Http\Responses\ViewResponse
      */
     public function index(ManageProductRequest $request)
     {
         return new ViewResponse('backend.products.index');
     }
+
     /**
      * Show the form for creating a new resource.
      *
-     * @param  CreateProductRequestNamespace  $request
+     * @param CreateProductRequestNamespace $request
      * @return \App\Http\Responses\Backend\Product\CreateResponse
      */
     public function create(CreateProductRequest $request)
@@ -76,10 +78,11 @@ class ProductsController extends Controller
 
         return new CreateResponse($this->status, $productCategories);
     }
+
     /**
      * Store a newly created resource in storage.
      *
-     * @param  StoreProductRequestNamespace  $request
+     * @param StoreProductRequestNamespace $request
      * @return \App\Http\Responses\RedirectResponse
      */
     public function store(StoreProductRequest $request)
@@ -89,27 +92,31 @@ class ProductsController extends Controller
         //Create the model using repository create method
         $this->repository->create($input);
         //return with successfull message
-        return new RedirectResponse(route('admin.products.index'), ['flash_success' => trans('alerts.backend.products.created')]);
+        return new RedirectResponse(
+            route('admin.products.index'),
+            ['flash_success' => trans('alerts.backend.products.created')]
+        );
     }
+
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  App\Models\Product\Product  $product
-     * @param  EditProductRequestNamespace  $request
+     * @param App\Models\Product\Product $product
+     * @param EditProductRequestNamespace $request
      * @return \App\Http\Responses\Backend\Product\EditResponse
      */
     public function edit(Product $product, EditProductRequest $request)
     {
         $productCategories = Category::getSelectData();
 
-        return new EditResponse($product,$this->status, $productCategories);
-
+        return new EditResponse($product, $this->status, $productCategories);
     }
+
     /**
      * Update the specified resource in storage.
      *
-     * @param  UpdateProductRequestNamespace  $request
-     * @param  App\Models\Product\Product  $product
+     * @param UpdateProductRequestNamespace $request
+     * @param App\Models\Product\Product $product
      * @return \App\Http\Responses\RedirectResponse
      */
     public function update(UpdateProductRequest $request, Product $product)
@@ -117,15 +124,19 @@ class ProductsController extends Controller
         //Input received from the request
         $input = $request->except(['_token']);
         //Update the model using repository update method
-        $this->repository->update( $product, $input );
+        $this->repository->update($product, $input);
         //return with successfull message
-        return new RedirectResponse(route('admin.products.index'), ['flash_success' => trans('alerts.backend.products.updated')]);
+        return new RedirectResponse(
+            route('admin.products.index'),
+            ['flash_success' => trans('alerts.backend.products.updated')]
+        );
     }
+
     /**
      * Remove the specified resource from storage.
      *
-     * @param  DeleteProductRequestNamespace  $request
-     * @param  App\Models\Product\Product  $product
+     * @param DeleteProductRequestNamespace $request
+     * @param App\Models\Product\Product $product
      * @return \App\Http\Responses\RedirectResponse
      */
     public function destroy(Product $product, DeleteProductRequest $request)
@@ -133,7 +144,10 @@ class ProductsController extends Controller
         //Calling the delete method on repository
         $this->repository->delete($product);
         //returning with successfull message
-        return new RedirectResponse(route('admin.products.index'), ['flash_success' => trans('alerts.backend.products.deleted')]);
+        return new RedirectResponse(
+            route('admin.products.index'),
+            ['flash_success' => trans('alerts.backend.products.deleted')]
+        );
     }
 
 }
