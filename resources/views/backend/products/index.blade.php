@@ -35,6 +35,9 @@
                     <thead>
                         <tr>
                             <th>{{ trans('labels.backend.products.table.id') }}</th>
+                            <th>{{ trans('labels.backend.products.table.name') }}</th>
+                            <th>{{ trans('labels.backend.products.table.publish') }}</th>
+                            <th>{{ trans('labels.backend.products.table.status') }}</th>
                             <th>{{ trans('labels.backend.products.table.createdat') }}</th>
                             <th>{{ trans('labels.general.actions') }}</th>
                         </tr>
@@ -74,6 +77,9 @@
                 },
                 columns: [
                     {data: 'id', name: '{{config('module.products.table')}}.id'},
+                    {data: 'name', name: '{{config('module.products.table')}}.name'},
+                    {data: 'publish_datetime', name: '{{config('module.products.table')}}.publish_datetime'},
+                    {data: 'status', name: '{{config('module.products.table')}}.status'},
                     {data: 'created_at', name: '{{config('module.products.table')}}.created_at'},
                     {data: 'actions', name: 'actions', searchable: false, sortable: false}
                 ],

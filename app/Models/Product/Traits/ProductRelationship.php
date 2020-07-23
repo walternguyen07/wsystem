@@ -11,7 +11,7 @@
  * @copyright   Copyright (c) Walter Nguyen
  */
 namespace App\Models\Product\Traits;
-
+use App\Models\Category\Category;
 /**
  * Class ProductRelationship
  */
@@ -29,4 +29,11 @@ trait ProductRelationship
         $this->belongsTo(User::class);
     }
      */
+    /**
+     * Product has many relationship with categories.
+     */
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class, 'product_map_categories', 'product_id', 'category_id');
+    }
 }

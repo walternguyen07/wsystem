@@ -16,6 +16,12 @@ use Illuminate\Contracts\Support\Responsable;
 
 class EditResponse implements Responsable
 {
+    protected $status;
+
+
+    protected $productCategories;
+
+
     /**
      * @var App\Models\Product\Product
      */
@@ -24,9 +30,11 @@ class EditResponse implements Responsable
     /**
      * @param App\Models\Product\Product $products
      */
-    public function __construct($products)
+    public function __construct($products,$status, $productCategories)
     {
         $this->products = $products;
+        $this->status = $status;
+        $this->productCategories = $productCategories;
     }
 
     /**
@@ -39,7 +47,9 @@ class EditResponse implements Responsable
     public function toResponse($request)
     {
         return view('backend.products.edit')->with([
-            'products' => $this->products
+            'products' => $this->products,
+            'productCategories' => $this->productCategories,
+            'status'         => $this->status,
         ]);
     }
 }

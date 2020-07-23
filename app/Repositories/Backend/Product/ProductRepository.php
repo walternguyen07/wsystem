@@ -14,11 +14,13 @@ namespace App\Repositories\Backend\Product;
 
 use DB;
 use Carbon\Carbon;
+use App\Models\Category\Category;
+use App\Models\ProductMapCategories\ProductMapCategory;
 use App\Models\Product\Product;
 use App\Exceptions\GeneralException;
 use App\Repositories\BaseRepository;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Support\Str;
 /**
  * Class ProductRepository.
  */
@@ -40,6 +42,9 @@ class ProductRepository extends BaseRepository
         return $this->query()
             ->select([
                 config('module.products.table').'.id',
+                config('module.products.table').'.name',
+                config('module.products.table').'.publish_datetime',
+                config('module.products.table').'.status',
                 config('module.products.table').'.created_at',
                 config('module.products.table').'.updated_at',
             ]);
@@ -54,10 +59,27 @@ class ProductRepository extends BaseRepository
      */
     public function create(array $input)
     {
-        if (Product::create($input)) {
-            return true;
-        }
-        throw new GeneralException(trans('exceptions.backend.products.create_error'));
+
+        $categoriesArray = $this->createCategories($input['categories']);
+        unset($input['categories']);
+
+        DB::transaction(
+            function () use ($input,  $categoriesArray) {
+                $input['slug'] = Str::slug($input['name']);
+                $input['publish_datetime'] = Carbon::parse($input['publish_datetime']);
+
+                if ($product = Product::create($input)) {
+                    // Inserting associated category's id in mapper table
+                    if (count($categoriesArray)) {
+                        $product->categories()->sync($categoriesArray);
+                    }
+
+                    return true;
+                }
+
+                throw new GeneralException(trans('exceptions.backend.products.create_error'));
+            }
+        );
     }
 
     /**
@@ -70,10 +92,28 @@ class ProductRepository extends BaseRepository
      */
     public function update(Product $product, array $input)
     {
-    	if ($product->update($input))
-            return true;
+        $categoriesArray = $this->createCategories($input['categories']);
+        unset( $input['categories']);
 
-        throw new GeneralException(trans('exceptions.backend.products.update_error'));
+        $input['slug'] = Str::slug($input['name']);
+        $input['publish_datetime'] = Carbon::parse($input['publish_datetime']);
+        DB::transaction(
+            function () use ($product, $input, $categoriesArray) {
+                if ($product->update($input)) {
+                    // Updateing associated category's id in mapper table
+                    if (count($categoriesArray)) {
+                        $product->categories()->sync($categoriesArray);
+                    }
+                    return true;
+                }
+
+                throw new GeneralException(trans('exceptions.backend.products.update_error'));
+
+            }
+        );
+
+
+
     }
 
     /**
@@ -85,10 +125,40 @@ class ProductRepository extends BaseRepository
      */
     public function delete(Product $product)
     {
-        if ($product->delete()) {
-            return true;
+
+        DB::transaction(
+            function () use ($product) {
+                if ($product->delete()) {
+                    ProductMapCategory::where('product_id', $product->id)->delete();
+                    return true;
+                }
+                throw new GeneralException(trans('exceptions.backend.products.delete_error'));
+            }
+        );
+    }
+
+     /**
+     * Creating Categories.
+     *
+     * @param Array($categories)
+     *
+     * @return array
+     */
+    public function createCategories($categories)
+    {
+        //Creating a new array for categories (newly created)
+        $categories_array = [];
+
+        foreach ($categories as $category) {
+            if (is_numeric($category)) {
+                $categories_array[] = $category;
+            } else {
+                $newCategory = Category::create(['name' => $category, 'status' => 1, 'created_by' => 1]);
+
+                $categories_array[] = $newCategory->id;
+            }
         }
 
-        throw new GeneralException(trans('exceptions.backend.products.delete_error'));
+        return $categories_array;
     }
 }

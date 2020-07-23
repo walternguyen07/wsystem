@@ -13,6 +13,7 @@
 namespace App\Http\Controllers\Backend\Product;
 
 use App\Models\Product\Product;
+use App\Models\Category\Category;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Responses\RedirectResponse;
@@ -32,6 +33,12 @@ use App\Http\Requests\Backend\Product\DeleteProductRequest;
  */
 class ProductsController extends Controller
 {
+    protected $status = [
+        'Published' => 'Published',
+        'Draft'     => 'Draft',
+        'InActive'  => 'InActive',
+        'Scheduled' => 'Scheduled',
+    ];
     /**
      * variable to store the repository object
      * @var ProductRepository
@@ -65,7 +72,9 @@ class ProductsController extends Controller
      */
     public function create(CreateProductRequest $request)
     {
-        return new CreateResponse('backend.products.create');
+        $productCategories = Category::getSelectData();
+
+        return new CreateResponse($this->status, $productCategories);
     }
     /**
      * Store a newly created resource in storage.
@@ -91,7 +100,10 @@ class ProductsController extends Controller
      */
     public function edit(Product $product, EditProductRequest $request)
     {
-        return new EditResponse($product);
+        $productCategories = Category::getSelectData();
+
+        return new EditResponse($product,$this->status, $productCategories);
+
     }
     /**
      * Update the specified resource in storage.
@@ -123,5 +135,5 @@ class ProductsController extends Controller
         //returning with successfull message
         return new RedirectResponse(route('admin.products.index'), ['flash_success' => trans('alerts.backend.products.deleted')]);
     }
-    
+
 }

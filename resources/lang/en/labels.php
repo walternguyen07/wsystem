@@ -254,6 +254,9 @@ return [
 	"title" => "Products",
 	"table" => [
 	"id" => "Id",
+	"name"=>"Name",
+	"publish" => "PublishDateTime",
+	"status" => "Status",
 	"createdat" => "Created At",
 	],
 	],

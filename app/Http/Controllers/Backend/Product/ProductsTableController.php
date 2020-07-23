@@ -48,6 +48,14 @@ class ProductsTableController extends Controller
     {
         return Datatables::of($this->product->getForDataTable())
             ->escapeColumns(['id'])
+            ->escapeColumns(['name'])
+
+            ->addColumn('publish_datetime', function ($product) {
+                return Carbon::parse($product->publish_datetime)->toDateString(); //$product->publish_datetime;//->format('d/m/Y h:i A');
+            })
+            ->addColumn('status', function ($product) {
+                return $product->status;
+            })
             ->addColumn('created_at', function ($product) {
                 return Carbon::parse($product->created_at)->toDateString();
             })
